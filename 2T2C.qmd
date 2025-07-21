@@ -1,0 +1,49 @@
+---
+title: "2T2C"
+author: "Ted Aplin"
+format: html
+editor: visual
+---
+
+# initialisation
+
+## RENV (Y*ou don't need to run this everytime)*
+
+```{r}
+renv::restore()
+renv::status()
+```
+
+## Loading packages
+
+```{r}
+library(tidyverse)
+library(here)
+load(here("Functions", "Functions for 2T2C"))
+```
+
+# Data preparation
+
+## loading
+
+Place your data into the "Data" folder then enter it's file name here
+
+```{r}
+#| label: File name
+FileName <- ""
+```
+
+```{r}
+#| label: Data loading
+read.csv(here("Data", FileName))
+```
+
+## Wrangling
+
+## calculations
+
+# Visualisation
+
+## All 
+
+## Individual cells
