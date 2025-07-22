@@ -30,16 +30,22 @@ load(here("Functions", "Functions for 2T2C.R"))
 
 ## loading
 
-Place your data into the "Data" folder then enter it's file name here
+Place your data into the "Data" folder then enter it's file name here and the time interval between each frame in *Seconds.*
 
 ```{r}
 #| label: File name
-FileName <- ""
+FileName <- "Test Results.csv"
+TimeInterval <- 3
 ```
 
 ```{r}
 #| label: Data loading
-read.csv(here("Data", FileName))
+Input <- read.csv(here("Input", FileName))
+Count <- as.numeric(sum(Input$Frame == 1))
+ROICount <- Count/max(Input$Ch) 
+Data <- Input %>% mutate(X = X - (Ch-1)*ROICount - (Frame-1)*Count)
+colnames(Data) <- c("ROI", "Area", "Mean", "Min", "Max", "Channel", "Frame")
+Data$Time <- (Data$Frame-1) * TimeInterval
 ```
 
 ## Wrangling
