@@ -17,8 +17,12 @@ renv::status()
 ## Loading packages
 
 ```{r}
+#| label: Packages
+# loading packages
 library(tidyverse)
 library(here)
+
+# loading personal functions
 load(here("Functions", "Functions for 2T2C"))
 ```
 
@@ -44,6 +48,6 @@ read.csv(here("Data", FileName))
 
 # Visualisation
 
-## All 
+## All
 
 ## Individual cells
