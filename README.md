@@ -6,6 +6,10 @@ This is a data processing pipeline for Calcium signalling data. It's original ai
 
 ## Usage
 
+### prerequisites
+
+Rstudio and and FIJI
+
 ### Taking images
 
 When taking images try to insure your images match as closely as possible to these parameters:
