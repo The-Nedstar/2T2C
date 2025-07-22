@@ -23,7 +23,7 @@ library(tidyverse)
 library(here)
 
 # loading personal functions
-load(here("Functions", "Functions for 2T2C"))
+load(here("Functions", "Functions for 2T2C.R"))
 ```
 
 # Data preparation
