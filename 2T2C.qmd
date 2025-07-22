@@ -5,9 +5,9 @@ format: html
 editor: visual
 ---
 
-# initialisation
+# Initialisation
 
-## RENV (Y*ou don't need to run this everytime)*
+## RENV (Y*ou don't need to run this every time)*
 
 ```{r}
 renv::restore()
