@@ -1,4 +1,4 @@
-# Ted's Tool for Calcium Counting - 2T2C
+# Ted's Tools for Calcium Counting - 2T2C
 
 ## About
 
