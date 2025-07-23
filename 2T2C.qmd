@@ -1,4 +1,5 @@
 ---
+Y---
 title: "2T2C"
 author: "Ted Aplin"
 format: html
@@ -23,32 +24,65 @@ library(tidyverse)
 library(here)
 
 # loading personal functions
-load(here("Functions", "Functions for 2T2C.R"))
+source(here("Functions", "Functions for 2T2C.R"))
 ```
 
 # Data preparation
 
 ## loading
 
-Place your data into the "Data" folder then enter it's file name here and the time interval between each frame in *Seconds.*
+Place your data into the "Input" folder then enter in the following details here, a demo from the test data-set is here by default. **If there is any information you would not like to enter, write FALSE in block capitals with no quotation marks.**
+
+-   File name including extension (.csv)
+
+-   The time interval between frames in Seconds
+
+-   The number of the channel that contains the calcium data
+
+-   The number of the channel that contains the background data
+
+-   the names you would like to give to your sensors
+
+-   the names you would like to give your ROIs
 
 ```{r}
-#| label: File name
+#| label: Data loading and Wrangling
+# Input file name in the format "file name.csv" MUST BE ENTERED
 FileName <- "Test Results.csv"
+
+# Input time interval as a number with no quotation marks
 TimeInterval <- 3
-```
 
-```{r}
-#| label: Data loading
-Input <- read.csv(here("Input", FileName))
-Count <- as.numeric(sum(Input$Frame == 1))
-ROICount <- Count/max(Input$Ch) 
-Data <- Input %>% mutate(X = X - (Ch-1)*ROICount - (Frame-1)*Count)
-colnames(Data) <- c("ROI", "Area", "Mean", "Min", "Max", "Channel", "Frame")
-Data$Time <- (Data$Frame-1) * TimeInterval
-```
+## Inputting Channel information
+# Input Calcium channel number with no quotation marks
+CalciumChannel <- 5
 
-## Wrangling
+# Input Background channel number with no quotation marks
+BackgroundChannel <- 2
+
+# Input sensor names in the form c("name for sensor 1", "name for sensor 2", ...)
+SensorNames <- c("Sensor 1", "Sensor 2")
+
+## Inputting ROI information
+# Input background ROI number with no quotation marks
+BackgroundROI <- 7
+
+# Input ROI names in the form c("name for ROI 1", "name for ROI 2", ...)
+ROINames <- c("ROI 1", "ROI 2")
+
+
+
+##################################################################
+## functions for loading and Wrangling Data, do not touch!
+# loading your dataset
+if (endsWith(FileName, ".csv") != TRUE){
+  cat('You must enter a filename in the form "file name.csv"', "\n")
+} else{
+  Input <- read.csv(here("Input", FileName))
+  # creating Dataset from your Inputted information and saving it to Output\Data
+  Data <- DataWrangling(FileName, Input, TimeInterval, SensorNames, ROINames)
+}
+```
 
 ## calculations
 
@@ -57,3 +91,8 @@ Data$Time <- (Data$Frame-1) * TimeInterval
 ## All
 
 ## Individual cells
+
+```{r}
+cat("ERROR: Something went wrong\n")
+cat("This message is not an error.\n")
+```
