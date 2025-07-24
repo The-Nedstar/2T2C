@@ -78,7 +78,7 @@ DataExtending <- function(FileName, Input, TimeInterval, SensorNames, ROINames){
 }
 
 ### Wrangling the data into a format more useful for analysis
-DataWrangling <- function(OGData, CalciumChannel, BackgroundChannel, BackgroundROI){
+DataWrangling <- function(OGData, CalciumChannel, BackgroundChannel, BackgroundROI, FileName){
   if (data.class(BackgroundROI) != "numeric" | data.class(BackgroundChannel) != "numeric" | data.class(CalciumChannel) != "numeric" ){
     if(data.class(CalciumChannel) != "numeric"){
       message("\n ERROR: Calcium channel data not added as not numeric, please write a number without speechmarks", "\n")    
@@ -155,7 +155,10 @@ DataWrangling <- function(OGData, CalciumChannel, BackgroundChannel, BackgroundR
             Output <- Output %>% filter(ROI != BackgroundROI)
             cat("Normalised ratio added correctly! \n")
           }
-          
+          OutputName <- paste0(substr(FileName, 1, nchar(FileName) - 4), "-Wrangled.csv")
+          # Saving as a CSV
+          write.csv(Output, here("Output", "Data", OutputName))
+          cat(".csv file successfully saved as", here("Output", "Data", OutputName))
           return(Output)
         }
       }
@@ -163,33 +166,17 @@ DataWrangling <- function(OGData, CalciumChannel, BackgroundChannel, BackgroundR
   }
 }
 
-#   ## wrangling the data
-#   Output <- OGData %>% 
-#     # selecting only the relevant channels
-#     filter(Channel %in% c(CalciumChannel, BackgroundChannel)) %>% 
-#     # adding a new column to say if a value is from the calcium sensor or background one
-#     mutate(Sensor = case_when(
-#       Channel == CalciumChannel ~ "Mean_Calcium",
-#       Channel == BackgroundChannel ~ "Mean_Background"
-#     )) %>% 
-#     # selecting only relevant columns
-#     select(Time, ROIName, ROI, Sensor, Mean) %>% 
-#     # merging rows with the same ROI
-#     pivot_wider(names_from = Sensor,
-#                 values_from = Mean) %>% 
-#     arrange(Time, ROIName)
-#   
-#   ## calculations
-#   # calculating Ratio
-#   Output$Ratio <- Output$Mean_Calcium/Output$Mean_Background
-#   # creating a column of entirely background Data
-#   Background <- Output %>%  filter(ROI == BackgroundROI) %>% 
-#     select(Time, Ratio)
-#   
-#   names(Background)[2] <- "Background_Ratio"
-#   Output <- merge(Output, Background, by = "Time", all.x = TRUE)
-#   
-#   Output$Normalised_Ratio <- Output$Ratio - Output$Background_Ratio
-#   Output <- Output %>% filter(ROI != BackgroundROI)
-#   return(Output)
-# }
+
+
+OctaveFile <- function(Data, FileName){
+  Output <- Data %>% 
+    select(ROI, Time, Normalised_Ratio) %>% 
+    pivot_wider(names_from = ROI,
+                values_from = Normalised_Ratio) %>% 
+    arrange(Time)
+  cat("Table created successfully!")
+  OutputName <- paste0(substr(FileName, 1, nchar(FileName) - 4), "-Octave_Input.csv")
+  # Saving as a CSV
+  write.csv(Output, here("Output", "Data", OutputName))
+  cat(".csv file successfully saved as", here("Output", "Data", OutputName))
+}

@@ -94,7 +94,7 @@ BackgroundROI <- 5
 ##################################################################
 ## functions for Wrangling Data, do not touch!
 # Creating the new Dataset
-Data <- DataWrangling(OGData, CalciumChannel, BackgroundChannel, BackgroundROI)
+Data <- DataWrangling(OGData, CalciumChannel, BackgroundChannel, BackgroundROI, FileName)
 ```
 
 # Octave integration
@@ -105,6 +105,11 @@ Octave for Mac:
 <https://octave-app.org/Developer-Downloads.html>
 Octave for Windows:
 <https://www.gnu.org/software/octave/download.html#ms-windows>
+
+```{r}
+#| label: Creation of Octave File
+OctaveFile(Data, FileName)
+```
 
 # Visualisation
 
