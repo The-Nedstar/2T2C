@@ -76,7 +76,7 @@ ROINames <- c("ROI 1", "ROI 2")
 ## functions for loading and Wrangling Data, do not touch!
 # loading your dataset
 if (endsWith(FileName, ".csv") != TRUE){
-  cat('You must enter a filename in the form "file name.csv"', "\n")
+  message('You must enter a filename in the form "file name.csv"', "\n")
 } else{
   Input <- read.csv(here("Input", FileName))
   # creating Dataset from your Inputted information and saving it to Output\Data
@@ -91,8 +91,3 @@ if (endsWith(FileName, ".csv") != TRUE){
 ## All
 
 ## Individual cells
-
-```{r}
-cat("ERROR: Something went wrong\n")
-cat("This message is not an error.\n")
-```
