@@ -8,7 +8,7 @@ Underscore <- function(x) {
 }
 
 ### Extending the Input data to include more information
-DataExtending <- function(FileName, Input, TimeInterval, SensorNames, ROINames){
+InputExtending <- function(FileName, Input, TimeInterval, SensorNames, ROINames){
   ## creating full data-set
   # calculations for identifying ROIs
   Count <- as.numeric(sum(Input$Frame == 1))
@@ -66,19 +66,20 @@ DataExtending <- function(FileName, Input, TimeInterval, SensorNames, ROINames){
       cat("ROI name data added successfully!", "\n")
     }
   }
-  
+  Output$ROIName <- as.factor(Output$ROIName)
+  Output$SensorName <- as.factor(Output$SensorName)
   ## Outputting data-set
   # creating FileName
   OutputName <- paste0(substr(FileName, 1, nchar(FileName) - 4), "-Extended.csv")
   # Saving as a CSV
-  write.csv(Output, here("Output", "Data", OutputName))
-  cat(".csv file successfully saved as", here("Output", "Data", OutputName))
+  write.csv(Output, here("Output", "Input", OutputName))
+  cat(".csv file successfully saved as", here("Output", "Input", OutputName))
   # returning the data-set
   return(Output)
 }
 
 ### Wrangling the data into a format more useful for analysis
-DataWrangling <- function(OGData, CalciumChannel, BackgroundChannel, BackgroundROI, FileName){
+InputWrangling <- function(OGInput, CalciumChannel, BackgroundChannel, BackgroundROI, FileName){
   if (data.class(BackgroundROI) != "numeric" | data.class(BackgroundChannel) != "numeric" | data.class(CalciumChannel) != "numeric" ){
     if(data.class(CalciumChannel) != "numeric"){
       message("\n ERROR: Calcium channel data not added as not numeric, please write a number without speechmarks", "\n")    
@@ -91,14 +92,14 @@ DataWrangling <- function(OGData, CalciumChannel, BackgroundChannel, BackgroundR
     }
   }
   else{
-    if (BackgroundROI > max(OGData$ROI) | CalciumChannel > max(OGData$Channel) | BackgroundChannel > max(OGData$Channel)){
-      if(CalciumChannel > max(OGData$Channel)){
+    if (BackgroundROI > max(OGInput$ROI) | CalciumChannel > max(OGInput$Channel) | BackgroundChannel > max(OGInput$Channel)){
+      if(CalciumChannel > max(OGInput$Channel)){
         message("\n ERROR: Calcium channel entered does not exist, make sure the number entered is not too high \n")    
       }
-      if(BackgroundChannel > max(OGData$Channel)){
+      if(BackgroundChannel > max(OGInput$Channel)){
         message("\n ERROR: Background channel entered does not exist, make sure the number entered is not too high, or 0 if you don't want to add Background channel data.", "\n")  
       }
-      if(BackgroundROI > max(OGData$ROI)){
+      if(BackgroundROI > max(OGInput$ROI)){
         message("\n ERROR: Background ROI entered does not exist, make sure the number entered is not too high, or 0 if you don't want to add Background ROI data.", "\n")
       }
     }
@@ -112,7 +113,7 @@ DataWrangling <- function(OGData, CalciumChannel, BackgroundChannel, BackgroundR
         }
         else{
           ## wrangling the data
-          Output <- OGData %>% 
+          Output <- OGInput %>% 
             # selecting only the relevant channels
             filter(Channel %in% c(CalciumChannel, BackgroundChannel)) %>% 
             # adding a new column to say if a value is from the calcium sensor or background one
@@ -126,7 +127,7 @@ DataWrangling <- function(OGData, CalciumChannel, BackgroundChannel, BackgroundR
             pivot_wider(names_from = Sensor,
                         values_from = Mean) %>% 
             arrange(Time, ROIName)
-          cat("Data wrangled successfully! \n")
+          cat("Input wrangled successfully! \n")
           
           ## calculations
           # calculating Ratio
@@ -139,7 +140,7 @@ DataWrangling <- function(OGData, CalciumChannel, BackgroundChannel, BackgroundR
             cat("Ratio added correctly! \n")
           }
           
-          # creating a column of entirely background Data
+          # creating a column of entirely background Input
           if (BackgroundROI == 0){
             cat("No Background ROI set, Normalised ratio will be set to the standard ratio \n")
             Output$Normalised_Ratio <- Output$Ratio
@@ -151,14 +152,14 @@ DataWrangling <- function(OGData, CalciumChannel, BackgroundChannel, BackgroundR
             names(Background)[2] <- "Background_Ratio"
             Output <- merge(Output, Background, by = "Time", all.x = TRUE)
             
-            Output$Normalised_Ratio <- Output$Ratio - Output$Background_Ratio
+            Output$Normalised_Ratio <- Output$Ratio/Output$Background_Ratio
             Output <- Output %>% filter(ROI != BackgroundROI)
             cat("Normalised ratio added correctly! \n")
           }
           OutputName <- paste0(substr(FileName, 1, nchar(FileName) - 4), "-Wrangled.csv")
           # Saving as a CSV
-          write.csv(Output, here("Output", "Data", OutputName))
-          cat(".csv file successfully saved as", here("Output", "Data", OutputName))
+          write.csv(Output, here("Output", "Input", OutputName))
+          cat(".csv file successfully saved as", here("Output", "Input", OutputName))
           return(Output)
         }
       }
@@ -168,8 +169,8 @@ DataWrangling <- function(OGData, CalciumChannel, BackgroundChannel, BackgroundR
 
 
 
-OctaveFile <- function(Data, FileName){
-  Output <- Data %>% 
+OctaveFile <- function(Input, FileName){
+  Output <- Input %>% 
     select(ROI, Time, Normalised_Ratio) %>% 
     pivot_wider(names_from = ROI,
                 values_from = Normalised_Ratio) %>% 
@@ -177,6 +178,28 @@ OctaveFile <- function(Data, FileName){
   cat("Table created successfully!")
   OutputName <- paste0(substr(FileName, 1, nchar(FileName) - 4), "-Octave_Input.csv")
   # Saving as a CSV
-  write.csv(Output, here("Output", "Data", OutputName))
-  cat(".csv file successfully saved as", here("Output", "Data", OutputName))
+  write.csv(Output, here("Output", "Input", OutputName))
+  cat(".csv file successfully saved as", here("Output", "Input", OutputName))
+}
+
+LineGraph <- function(Input, FileName, i=0){
+  Output <- ggplot(Input, aes(x = Time, y = Normalised_Ratio, colour = ROIName)) +
+    geom_line()
+  if (i == 0){
+    FileNamePNG <- paste0(substr(FileName, 1, nchar(FileName) - 4), " graph.png")
+    FileNameSVG <- paste0(substr(FileName, 1, nchar(FileName) - 4), " graph.svg")
+  }
+  else{
+    FileNamePNG <- paste0(substr(FileName, 1, nchar(FileName) - 4), " graph-", Input$ROIName[1], ".png")
+    FileNameSVG <- paste0(substr(FileName, 1, nchar(FileName) - 4), " graph-", Input$ROIName[1], ".svg")
+  }
+  png(filename = here("Output","PNGs", FileNamePNG), width = 2000, height = 1000, res = 200)
+  print(Output)
+  dev.off()
+}
+
+MultiPlot <- function(Input, FileName){
+  for(i in 1:max(Input$ROI)){
+    LineGraph(filter(Input, ROI == i), FileName)
+  }
 }

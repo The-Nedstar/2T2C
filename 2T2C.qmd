@@ -8,20 +8,18 @@ editor: visual
 
 # Initialisation
 
-## RENV (Y*ou don't need to run this every time)*
-
-```{r}
-renv::restore()
-renv::status()
-```
-
-## Loading packages
+Make sure you have run Initialisation.R before using this file for the first time, if any packages fail to load, then run it again.
 
 ```{r}
 #| label: Packages
 # loading packages
 library(tidyverse)
 library(here)
+library(png)
+library(svglite)
+# library(doParallel)
+# closeAllConnections()
+# registerDoParallel(cores=16)
 
 # loading personal functions
 source(here("Functions", "Functions for 2T2C.R"))
@@ -68,7 +66,7 @@ if (endsWith(FileName, ".csv") != TRUE){
   message('You must enter a filename in the form "file name.csv"', "\n")
 } else{
   Input <- read.csv(here("Input", FileName))
-  # creating Dataset from your Inputted information and saving it to Output\Data
+  # creating Dataset from your Inputted information and saving it to Output/Data
   OGData <- DataExtending(FileName, Input, TimeInterval, SensorNames, ROINames)
 }
 ```
@@ -101,10 +99,7 @@ Data <- DataWrangling(OGData, CalciumChannel, BackgroundChannel, BackgroundROI, 
 
 This is for use with the previously made code for Octave. To use, please install Octave from this link and follow the Octave section of the README file:
 
-Octave for Mac:
-<https://octave-app.org/Developer-Downloads.html>
-Octave for Windows:
-<https://www.gnu.org/software/octave/download.html#ms-windows>
+Octave for Mac: <https://octave-app.org/Developer-Downloads.html> Octave for Windows: <https://www.gnu.org/software/octave/download.html#ms-windows>
 
 ```{r}
 #| label: Creation of Octave File
@@ -115,4 +110,15 @@ OctaveFile(Data, FileName)
 
 ## All
 
+```{r}
+LineGraph(Data, FileName)
+```
+
 ## Individual cells
+
+```{r}
+#MultiPlot(Data, FileName)
+for(i in 1:as.integer(max(Data$ROI))){
+    LineGraph(filter(Data, ROI == i), FileName, i)
+}
+```
