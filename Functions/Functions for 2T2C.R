@@ -178,8 +178,8 @@ OctaveFile <- function(Input, FileName){
   cat("Table created successfully!")
   OutputName <- paste0(substr(FileName, 1, nchar(FileName) - 4), "-Octave_Input.csv")
   # Saving as a CSV
-  write.csv(Output, here("Output", "Input", OutputName))
-  cat(".csv file successfully saved as", here("Output", "Input", OutputName))
+  write.csv(Output, here("Output", "Data", OutputName))
+  cat(".csv file successfully saved as", here("Output", "Data", OutputName))
 }
 
 LineGraph <- function(Input, FileName, i=0){

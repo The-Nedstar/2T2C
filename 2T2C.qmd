@@ -46,7 +46,7 @@ Place your data into the "Input" folder then enter in the following details here
 ```{r}
 #| label: Data loading and manual data input
 # Input file name in the format "file name.csv" MUST BE ENTERED
-FileName <- "Test Results.csv"
+FileName <- "MAX_CNGC 5 2158-6 14,07,25_1.csv"
 
 # Input time interval as a number with no quotation marks
 TimeInterval <- 3
@@ -55,7 +55,7 @@ TimeInterval <- 3
 SensorNames <- c("CFP", "RFP")
 
 # Input ROI names in the form c("name for ROI 1", "name for ROI 2", ...)
-ROINames <- c("airpore cell", "something", "milk", "probably something", "background")
+ROINames <- c("Airpore Old 1", "Airpore Old 2", "Airpore Old 3", "Airpore Medium 1", "Airpore Medium 2", "Background")
 
 
 
@@ -86,7 +86,7 @@ BackgroundChannel <- 2
 
 ## Inputting ROI information
 # Input background ROI number with no quotation marks
-BackgroundROI <- 5
+BackgroundROI <- 6
 
 
 ##################################################################
