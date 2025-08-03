@@ -17,6 +17,7 @@ library(tidyverse)
 library(here)
 library(png)
 library(svglite)
+library(pals)
 # library(doParallel)
 # closeAllConnections()
 # registerDoParallel(cores=16)
@@ -46,29 +47,23 @@ Place your data into the "Input" folder then enter in the following details here
 ```{r}
 #| label: Data loading and manual data input
 # Input file name in the format "file name.csv" MUST BE ENTERED
-FileName <- "MAX_CNGC 5 2158-6 14,07,25_1.csv"
+InputFileName <- "MAX_WT 8 15,07,25_1.csv"
 
 # Input time interval as a number with no quotation marks
 TimeInterval <- 3
 
 # Input sensor names in the form c("name for sensor 1", "name for sensor 2", ...)
-SensorNames <- c("CFP", "RFP")
+SensorNames <- c("GFP", "RFP")
 
 # Input ROI names in the form c("name for ROI 1", "name for ROI 2", ...)
-ROINames <- c("Airpore Old 1", "Airpore Old 2", "Airpore Old 3", "Airpore Medium 1", "Airpore Medium 2", "Background")
+ROINames <- c("Airpore Old 1", "Airpore Old 2", "Airpore Old 3", "Airpore Medium 1", "Airpore Medium 2", "Background", "Background")
 
 
 
 ##################################################################
-## functions for loading and Wrangling Data, do not touch!
-# loading your dataset
-if (endsWith(FileName, ".csv") != TRUE){
-  message('You must enter a filename in the form "file name.csv"', "\n")
-} else{
-  Input <- read.csv(here("Input", FileName))
-  # creating Dataset from your Inputted information and saving it to Output/Data
-  OGData <- DataExtending(FileName, Input, TimeInterval, SensorNames, ROINames)
-}
+## functions for loading and Extending Data, do not touch!
+# creating Dataset from your Inputted information and saving it to Output/Data
+  OGData <- DataExtending(InputFileName, TimeInterval, SensorNames, ROINames)
 ```
 
 ## Data Wrangling
@@ -85,14 +80,14 @@ CalciumChannel <- 1
 BackgroundChannel <- 2
 
 ## Inputting ROI information
-# Input background ROI number with no quotation marks
-BackgroundROI <- 6
+# Input background ROI number with no quotation marks, if you want to add multiple do it in the form c(1, 2, ...)
+BackgroundROI <- c(6,7)
 
 
 ##################################################################
 ## functions for Wrangling Data, do not touch!
 # Creating the new Dataset
-Data <- DataWrangling(OGData, CalciumChannel, BackgroundChannel, BackgroundROI, FileName)
+Data <- DataWrangling(OGData, CalciumChannel, BackgroundChannel, BackgroundROI, InputFileName)
 ```
 
 # Octave integration
@@ -103,22 +98,57 @@ Octave for Mac: <https://octave-app.org/Developer-Downloads.html> Octave for Win
 
 ```{r}
 #| label: Creation of Octave File
-OctaveFile(Data, FileName)
+OctaveFile(Data, InputFileName)
 ```
 
 # Visualisation
 
-## All
+set Ylimit to 0 if you want it to be set automatically based on the largest value in your dataset.
 
 ```{r}
-LineGraph(Data, FileName)
+GraphName <- "WT 1"
+
+# enter the maximum Y value for the graph, if you want this to be set automatically put 0
+YLimit <- 0
+
+# enter the resoltuion of the graph in the form c(X, y, DPI)
+Resolution <- c(1200,500,200)
+
+
+
+##################################################################
+## functions for creating graphs, do not touch!
+# Creating a graph of all data
+YLimitAuto <- LineGraph(Data, InputFileName, GraphName, YLimit, Resolution)
+
+# creating indivual graphs
+for(i in 1:as.integer(max(Data$ROI))){
+  GraphData <- filter(Data, ROI == i)
+  OutputName <- paste0(GraphName, " - ", GraphData$ROIName[1])
+  LineGraph(GraphData, InputFileName, OutputName, 
+            YLimitAuto, Resolution,  i)
+}
 ```
 
-## Individual cells
+# Comparing background signals
+
+if Permission is Denied, then make sure that you don't have the .csv file open in any programs.
 
 ```{r}
-#MultiPlot(Data, FileName)
-for(i in 1:as.integer(max(Data$ROI))){
-    LineGraph(filter(Data, ROI == i), FileName, i)
-}
+#| label: setting background file name
+BackgroundFileName <- "Background.csv"
+```
+
+```{r}
+#| label: adding Background Data
+BackgroundTable(Data, Sample,  BackgroundFileName, InputFileName)
+```
+
+## T test
+
+```{r}
+#| label: Background T Test
+TT1 <- read.csv(here("Output", "Data", "WTBackground.csv"))
+TT2 <- read.csv(here("Output", "Data", "CNGCBackground.csv"))
+t.test(TT1, TT2)
 ```
