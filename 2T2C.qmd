@@ -56,14 +56,14 @@ TimeInterval <- 3
 SensorNames <- c("GFP", "RFP")
 
 # Input ROI names in the form c("name for ROI 1", "name for ROI 2", ...)
-ROINames <- c("Airpore Old 1", "Airpore Old 2", "Airpore Old 3", "Airpore Medium 1", "Airpore Medium 2", "Background", "Background")
+ROINames <- c("Airpore Old 1", "Airpore Old 2", "Airpore Old 3", "Airpore Medium 1","Airpore Medium 2", "Airpore young 1", "background")
 
 
 
 ##################################################################
 ## functions for loading and Extending Data, do not touch!
 # creating Dataset from your Inputted information and saving it to Output/Data
-  OGData <- DataExtending(InputFileName, TimeInterval, SensorNames, ROINames)
+OGData <- DataExtending(InputFileName, TimeInterval, SensorNames, ROINames)
 ```
 
 ## Data Wrangling
@@ -81,7 +81,7 @@ BackgroundChannel <- 2
 
 ## Inputting ROI information
 # Input background ROI number with no quotation marks, if you want to add multiple do it in the form c(1, 2, ...)
-BackgroundROI <- c(6,7)
+BackgroundROI <- 7
 
 
 ##################################################################
@@ -106,13 +106,13 @@ OctaveFile(Data, InputFileName)
 set Ylimit to 0 if you want it to be set automatically based on the largest value in your dataset.
 
 ```{r}
-GraphName <- "WT 1"
+GraphName <- "WT-8"
 
 # enter the maximum Y value for the graph, if you want this to be set automatically put 0
-YLimit <- 0
+YLimit <- 0.35
 
 # enter the resoltuion of the graph in the form c(X, y, DPI)
-Resolution <- c(1200,500,200)
+Resolution <- c(2000,1000,200)
 
 
 

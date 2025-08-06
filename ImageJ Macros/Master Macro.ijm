@@ -7,10 +7,10 @@
 
 #@ File (label = "Select folder with raw data", style="directory") input //defines folder with raw data
 #@ File (label = "Select folder to export tif files to", style="directory") output //defines output directory for exported data
-#@ string (label = "Pixel binning", choices={"no", "yes", "yes and save"}, style="radioButtonHorizontal") Binning
-#@ string (label = "Maximum Intensity Projection", choices={"no", "yes", "yes and save"}, style="radioButtonHorizontal") MIP
+#@ string (label = "Reduce file sizes > 4GB", choices={"no", "yes", "yes and save"}, style="radioButtonHorizontal") Binning
+#@ string (label = "Maximum intensity projection", choices={"no", "yes", "yes and save"}, style="radioButtonHorizontal") MIP
 #@ string (label = "Auto brightness/contrast", choices={"no", "yes", "yes and save"}, style="radioButtonHorizontal") Bright
-#@ string (label = "Fix drift", choices={"no", "yes", "yes and save"}, style="radioButtonHorizontal") Stabilisation
+#@ string (label = "Reduce drift", choices={"no", "yes", "yes and save"}, style="radioButtonHorizontal") Stabilisation
 
 
 //cleanup
