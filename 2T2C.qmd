@@ -47,7 +47,7 @@ Place your data into the "Input" folder then enter in the following details here
 ```{r}
 #| label: Data loading and manual data input
 # Input file name in the format "file name.csv" MUST BE ENTERED
-InputFileName <- "MAX_WT 8 15,07,25_1.csv"
+InputFileName <- "MAX_CNGC 1 2158-6 14,07,25_1.csv"
 
 # Input time interval as a number with no quotation marks
 TimeInterval <- 3
@@ -56,7 +56,7 @@ TimeInterval <- 3
 SensorNames <- c("GFP", "RFP")
 
 # Input ROI names in the form c("name for ROI 1", "name for ROI 2", ...)
-ROINames <- c("Airpore Old 1", "Airpore Old 2", "Airpore Old 3", "Airpore Medium 1","Airpore Medium 2", "Airpore young 1", "background")
+ROINames <- c("Airpore Old 1", "Airpore Old 2", "Airpore Old 3", "Airpore Medium 1", "Airpore Medium 2",  "background")
 
 
 
@@ -81,7 +81,7 @@ BackgroundChannel <- 2
 
 ## Inputting ROI information
 # Input background ROI number with no quotation marks, if you want to add multiple do it in the form c(1, 2, ...)
-BackgroundROI <- 7
+BackgroundROI <- 6
 
 
 ##################################################################
@@ -130,29 +130,6 @@ for(i in 1:as.integer(max(Data$ROI))){
 }
 ```
 
-# Comparing background signals
-
-if Permission is Denied, then make sure that you don't have the .csv file open in any programs.
-
-```{r}
-#| label: setting background file name
-BackgroundFileName <- "Background.csv"
-```
-
-```{r}
-#| label: adding Background Data
-BackgroundTable(Data, Sample,  BackgroundFileName, InputFileName)
-```
-
-## T test
-
-```{r}
-#| label: Background T Test
-TT1 <- read.csv(here("Output", "Data", "WTBackground.csv"))
-TT2 <- read.csv(here("Output", "Data", "CNGCBackground.csv"))
-t.test(TT1, TT2)
-```
-
 # Patch processes
 
 These processes have certain pre-requisites:
@@ -170,18 +147,20 @@ In this
 ```{r}
 #| label: Batch Data Loading
 
+FileName <- "WT vs cngc3 airpore calcium signalling 12,08,25"
+
 # Enter the name of each sample as it appears in the filenames, in the format C("sample 1", "sample 2", ...)
 SampleNames <- c("WT", "CNGC")
 
 # Enter the name that you would like to display for each sample, in the format C("sample 1", "sample 2", ...)
 # ensure that they are in the same order as above
 # if you want to use SampleNames as DisplayNames then you can put in 0
-DisplayNames <- c("WT", "cngc3")
+DisplayNames <- 0
 
 
 
 ##################################################################
 ## functions for creating Dataset, do not touch!
 # Creating dataset from supplied files
-BatchData <- BatchDataset(SampleNames, DisplayNames)
+BatchData <- BatchDataset(SampleNames, DisplayNames, FileName)
 ```
