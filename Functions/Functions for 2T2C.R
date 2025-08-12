@@ -16,11 +16,11 @@ DataExtending <- function(FileName , TimeInterval, SensorNames, ROINames){
     message('ERROR: You must enter a filename in the form "file name.csv"', "\n")
   } 
   else {
-    if (file.exists(here("Input", FileName)) == FALSE){
+    if (file.exists(here("Input", "Individual", FileName)) == FALSE){
       message('ERROR: This file does not exist, check the Input folder to see if the file is present and has the right name!', "\n")
     }
      else{
-      Input <- read.csv(here("Input", FileName))
+      Input <- read.csv(here("Input", "Individual", FileName))
       Count <- as.numeric(sum(Input$Frame == 1))
       ROICount <- Count/max(Input$Ch)
       # setting ROI numbers

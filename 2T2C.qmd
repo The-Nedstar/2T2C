@@ -152,3 +152,36 @@ TT1 <- read.csv(here("Output", "Data", "WTBackground.csv"))
 TT2 <- read.csv(here("Output", "Data", "CNGCBackground.csv"))
 t.test(TT1, TT2)
 ```
+
+# Patch processes
+
+These processes have certain pre-requisites:
+
+-   You have run all data that you would like to use through [loading] and [Data Wrangling]
+
+-   all of their files are in Input/Batch
+
+-   all files from a certain sample (e.g. Wild type, mutant, treatment, etc.) share a common string of characters in their filenames
+
+## Batch Data Loading
+
+In this
+
+```{r}
+#| label: Batch Data Loading
+
+# Enter the name of each sample as it appears in the filenames, in the format C("sample 1", "sample 2", ...)
+SampleNames <- c("WT", "CNGC")
+
+# Enter the name that you would like to display for each sample, in the format C("sample 1", "sample 2", ...)
+# ensure that they are in the same order as above
+# if you want to use SampleNames as DisplayNames then you can put in 0
+DisplayNames <- c("WT", "cngc3")
+
+
+
+##################################################################
+## functions for creating Dataset, do not touch!
+# Creating dataset from supplied files
+BatchData <- BatchDataset(SampleNames, DisplayNames)
+```
