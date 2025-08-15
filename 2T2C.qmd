@@ -147,7 +147,7 @@ In this
 ```{r}
 #| label: Batch Data Loading
 
-FileName <- "WT vs cngc3 airpore calcium signalling 12,08,25"
+FileName <- "WT vs cngc3 airpore calcium signalling 12,08,25.csv"
 
 # Enter the name of each sample as it appears in the filenames, in the format C("sample 1", "sample 2", ...)
 SampleNames <- c("WT", "CNGC")
@@ -155,7 +155,7 @@ SampleNames <- c("WT", "CNGC")
 # Enter the name that you would like to display for each sample, in the format C("sample 1", "sample 2", ...)
 # ensure that they are in the same order as above
 # if you want to use SampleNames as DisplayNames then you can put in 0
-DisplayNames <- 0
+DisplayNames <- c("WT","cngc3")
 
 
 

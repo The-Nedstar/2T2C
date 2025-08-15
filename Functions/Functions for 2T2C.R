@@ -65,20 +65,20 @@ DataExtending <- function(FileName , TimeInterval, SensorNames, ROINames){
   # adding ROI names
   if (all(ROINames == 0)){
     cat("No ROI name data presented.", "\n")
-    Output$ROIName <- Output$ROI
+    Output$ROI_Name <- Output$ROI
   }
   else{
     if (length(ROINames) != max(Output$ROI)){
       message('ERROR: ROI name data entered incorrectly, ensure it is done in the form c("name for ROI 1", "name for ROI 2", ...) and that you have put a name for each ROI present. \n')
       message("you entered names for ", length(ROINames), " ROIs but need names for ", max(Output$ROI), " ROIs.", "\n")    
-      Output$ROIName <- Output$ROI
+      Output$ROI_Name <- Output$ROI
     }
     else{
-      Output$ROIName <- ROINames[Output$ROI]
+      Output$ROI_Name <- ROINames[Output$ROI]
       cat("ROI name data added successfully!", "\n")
     }
   }
-  Output$ROIName <- as.factor(Output$ROIName)
+  Output$ROI_Name <- as.factor(Output$ROI_Name)
   Output$SensorName <- as.factor(Output$SensorName)
   ## Outputting data-set
   # creating FileName
@@ -216,8 +216,8 @@ LineGraph <- function(Input, FileName, GraphName, YLimit, Resolution, i=0){
     FileNameSVG <- paste0(substr(FileName, 1, nchar(FileName) - 4), " graph.svg")
   }
   else{
-    FileNamePNG <- paste0(substr(FileName, 1, nchar(FileName) - 4), " graph-", Input$ROIName[1], ".png")
-    FileNameSVG <- paste0(substr(FileName, 1, nchar(FileName) - 4), " graph-", Input$ROIName[1], ".svg")
+    FileNamePNG <- paste0(substr(FileName, 1, nchar(FileName) - 4), " graph-", Input$ROI_Name[1], ".png")
+    FileNameSVG <- paste0(substr(FileName, 1, nchar(FileName) - 4), " graph-", Input$ROI_Name[1], ".svg")
   }
   png(filename = here("Output","PNGs", FileNamePNG), width = Resolution[1], height = Resolution[2], res = Resolution[3])
   print(Output)
@@ -230,7 +230,7 @@ LineGraph <- function(Input, FileName, GraphName, YLimit, Resolution, i=0){
 
 ### Creates a Dataset from multiple for use in normalisation
 BatchDataset <- function(SampleNames, DisplayNames, FileName){
-  # error messages
+  ## error messages
   if (length(SampleNames) < 1 |  data.class(SampleNames) != "character"){
     message('ERROR: Sample Name Data entered incorrectly, ensure that it is in the form c("sample 1", "sample 2", ...) \n')
     return()
@@ -239,23 +239,36 @@ BatchDataset <- function(SampleNames, DisplayNames, FileName){
     message('ERROR: Display Name Data entered incorrectly, ensure that it is in the form c("sample 1", "sample 2", ...), or put 0 if you want to keep the same names as in the file names \n')
     return()
   }
-  if (length(DisplayNames) != length(SampleNames) & DisplayNames != 0){
+  if (all(length(DisplayNames) != length(SampleNames) & all(DisplayNames != 0))){
     message('ERROR: You have not entered the correct amount of Names for Display, if you want to take the names from the file names then set it as 0 \n')
     message("You have entered ", length(DisplayNames), " display names ", length(SampleNames), " sample names \n")
     return()
   }
-  if (DisplayNames == 0){
+  if (all(DisplayNames == 0)){
     DisplayNames <- SampleNames
     cat("No display names entered, so sample names used instead \n")
   }
-  # getting filenames
+  
+  ## getting filenames
+  UnusedFiles <- data.frame(
+    File_Name = character(),
+    Reason = character(),
+    stringsAsFactors = FALSE)
   List <- list.files(path = here("Input", "Batch"))
   FileList <- character(0)
+  
+  ## checking if .csv
   for (i in 1:length(List)) {
     if (endsWith(List[i], ".csv")) {      # Check for file extension
-      FileList <- c(fileList, List[i])      # Append matching files to fileList
+      FileList <- c(FileList, List[i])      # Append matching files to FileList
+    }
+    else{
+      UnusedFiles <- rbind(UnusedFiles, data.frame(File_Name = List[i], 
+                                                   Reason = "Not a .csv files"))
     }
   }
+  
+  ## outputting number of suitable files
   if(length(FileList) == 0){
     message("ERROR: No .csv files detected in the folder Input/Batch \n")
     return()
@@ -263,10 +276,72 @@ BatchDataset <- function(SampleNames, DisplayNames, FileName){
   else{
     cat(length(FileList), " .csv files found in Input/Batch \n")
   }
-  Names <- 
+  
+  ## adding data to batch dataset
+  Names <- c("Time", "ROI_Name", "ROI", "Mean_Calcium", "Mean_Background", "Ratio")
+  Output <- data.frame(
+    Sample <- character(),
+    Time = numeric(),
+    ROI_Name = numeric(),
+    Mean_Calcium = numeric(),
+    Mean_Background = numeric(),
+    Ratio = numeric(),
+    File_Name = character(),
+    stringsAsFactors = TRUE)
+  
+  Counter <- data.frame(
+    Sample = SampleNames,
+    Count = 0)
+  
+  Counter <- rbind(Counter, data.frame(
+    Sample = "Failed to add",
+    Count = 0))
+
   for (i in 1:length(FileList)){
+    Unused <- TRUE
     Temp <- read.csv(here("Input", "Batch", FileList[i]))
+    if (any(colnames(Temp) != Names)){
+      UnusedFiles <- rbind(UnusedFiles, data.frame(File_Name = List[i], 
+                                                   Reason = "File incorrectly formatted"))
+      Unused <- FALSE
+    }
+    else{
+      for (u in 1:length(SampleNames)){
+        if (grepl(SampleNames[u], FileList[i])){
+          Output <- rbind(Output, data.frame(Sample = DisplayNames[u],
+                                             Time = Temp$Time,
+                                             ROI_Name = Temp$ROI_Name,
+                                             Mean_Calcium = Temp$Mean_Calcium,
+                                             Mean_Background = Temp$Mean_Background,
+                                             Ratio = Temp$Ratio,
+                                             File_Name = FileList[i],
+                                             stringsAsFactors = TRUE))
+          Counter$Count[u] <- Counter$Count[u] + 1
+          Unused <- FALSE
+        }
+      }
+    }
+    if (Unused == TRUE){
+      UnusedFiles <- rbind(UnusedFiles, data.frame(File_Name = List[i], 
+                                                   Reason = "File did not contain any given sample names"))
+    }
   }
+  
+  ## saving .csv file
+  if (endsWith(FileName, ".csv") != TRUE){
+    FileName <- paste0(FileName, ".csv")
+  }
+  write.csv(Output, here("Output", "Data", FileName), row.names = FALSE)
+  
+  ## showing the progress
+  cat("Batch file created as: ",here("Output", "Data", FileName), ", information shall now be presented: \n")
+  cat("In total ", sum(Counter$Count), " files were correctly processed, a breakdown of how many are in each sample has been created for you to view \n")
+  message("In total ", nrow(UnusedFiles), " files were not able to be added, a breakdown of each file and the reason for not adding has been created too")
+  
+  Counter$Count[nrow(Counter)] <- nrow(UnusedFiles)
+  view(UnusedFiles)
+  view(Counter)
+  return(Output)
 }
 
 
@@ -274,7 +349,7 @@ BatchDataset <- function(SampleNames, DisplayNames, FileName){
 MultiPlot <- function(Input, FileName, GraphName){
   for(i in 1:max(Input$ROI)){
     Output <- filter(Input, ROI == i)
-    OutputName <- paste0(GraphName, " - ", Output$ROIName[1])
+    OutputName <- paste0(GraphName, " - ", Output$ROI_Name[1])
     LineGraph(Output, FileName, Outputname, i)
   }
 }
