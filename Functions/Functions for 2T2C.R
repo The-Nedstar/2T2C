@@ -190,7 +190,7 @@ OctaveFile <- function(Input, FileName){
   cat("Table created successfully!")
   OutputName <- paste0(substr(FileName, 1, nchar(FileName) - 4), "-Octave_Input.csv")
   # Saving as a CSV
-  write.csv(Output, here("Output", "Data", OutputName), row.names = FALSE)
+  write.csv(Output, here("Output", "Data", OutputName), row.names = FALSE, col.names = FALSE)
   cat(".csv file successfully saved as", here("Output", "Data", OutputName))
 }
 
@@ -282,7 +282,8 @@ BatchDataset <- function(SampleNames, DisplayNames, FileName){
   Output <- data.frame(
     Sample <- character(),
     Time = numeric(),
-    ROI_Name = numeric(),
+    ROI_Name = character(),
+    ROI = numeric(),
     Mean_Calcium = numeric(),
     Mean_Background = numeric(),
     Ratio = numeric(),
@@ -311,6 +312,7 @@ BatchDataset <- function(SampleNames, DisplayNames, FileName){
           Output <- rbind(Output, data.frame(Sample = DisplayNames[u],
                                              Time = Temp$Time,
                                              ROI_Name = Temp$ROI_Name,
+                                             ROI = Temp$ROI,
                                              Mean_Calcium = Temp$Mean_Calcium,
                                              Mean_Background = Temp$Mean_Background,
                                              Ratio = Temp$Ratio,
@@ -343,6 +345,21 @@ BatchDataset <- function(SampleNames, DisplayNames, FileName){
   view(Counter)
   return(Output)
 }
+
+### Histogram funciton
+Boxplot <- function(Input){
+  Data <- Input %>%
+    filter(ROI == 0) %>%
+    group_by(File_Name) %>%
+    summarise(Background_Intensity = mean(Mean_Calcium, na.rm = TRUE), Sample = Sample[1])
+  Output <- ggplot(Data, aes(x = Sample, y = Background_Intensity, colour = Sample)) +
+    geom_boxplot() +
+    geom_beeswarm() +
+    theme_bw()
+  print(Output)
+  return(Data)
+}
+
 
 
 ######## Unifinshed functions

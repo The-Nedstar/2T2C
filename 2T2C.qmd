@@ -18,6 +18,7 @@ library(here)
 library(png)
 library(svglite)
 library(pals)
+library(ggbeeswarm)
 # library(doParallel)
 # closeAllConnections()
 # registerDoParallel(cores=16)
@@ -163,4 +164,15 @@ DisplayNames <- c("WT","cngc3")
 ## functions for creating Dataset, do not touch!
 # Creating dataset from supplied files
 BatchData <- BatchDataset(SampleNames, DisplayNames, FileName)
+```
+
+## Load a different file
+
+```{r}
+```
+
+## Comparing background
+
+```{r}
+Data <- Boxplot(BatchData)
 ```
