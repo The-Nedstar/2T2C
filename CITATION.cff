@@ -1,14 +1,14 @@
 title: 'TedAplin/2T2C: v1.0'
-abstract: A set of R scripts for initial manipulation and visualization of Intensity data
+abstract: A set of R scripts for initial manipulation and visualisation of Intensity data
 doi: 10.5281/zenodo.17417728
-repository-code: https://github.com/TedAplin/Fiji-Macro-Toolkit
-version: v1.0
-date-released: 2025-10-24
+repository-code: https://github.com/TedAplin/2T2C
+version: 1.0
+date-released: 2025-10-26
 message: If you use this software, please cite it as below.
 authors:
   - given-names: Edward
     family-names: Aplin
-orcid: https://orcid.org/0009-0003-2175-5365
+    orcid: https://orcid.org/0009-0003-2175-5365
 keywords:
   - RStudio
   - Bioimaging
