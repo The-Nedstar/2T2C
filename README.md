@@ -86,7 +86,7 @@ git clone https://github.com/TedAplin/2T2C.git
 
 2.  Extract the files in the ZIP folder to wherever you want the project to be located
 
-### First time initialisation {#first-time-initialisation}
+### First time initialisation
 
 This installs all the required packages from the "renv.lock" file so that you can use the code. If issues start happening, it is worth running these instructions again to re-install all packages.
 
